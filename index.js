@@ -14,7 +14,7 @@ let lastMessage = null;
 
 // Configurăm CORS pentru a permite cererile de pe originile dorite
 app.use(cors({
-    origin: 'https://tektonikstest.vercel.app', // Permite cererile doar de pe acest domeniu
+    origin: 'https://tektonikstestt.vercel.app', // Permite cererile doar de pe acest domeniu
     methods: ['GET', 'POST'], // Permite doar metodele GET și POST
     allowedHeaders: ['Content-Type', 'Authorization'] // Permite aceste anteturi
 }));
