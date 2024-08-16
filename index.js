@@ -14,7 +14,7 @@ let lastMessage = null;
 
 // Configurăm CORS pentru a permite cererile de pe originile dorite
 app.use(cors({
-    origin: 'https://tekere.vercel.app', // Permite cererile doar de pe acest domeniu
+    origin: 'https://play.unity.com/en/games/2d60e257-5fec-4dfc-993d-255e4cf0db35/webgl-builds', // Permite cererile doar de pe acest domeniu
     methods: ['GET', 'POST'], // Permite doar metodele GET și POST
     allowedHeaders: ['Content-Type', 'Authorization'] // Permite aceste anteturi
 }));
