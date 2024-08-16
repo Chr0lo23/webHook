@@ -6,7 +6,7 @@ const cors = require('cors'); // Importă pachetul cors
 const app = express();
 const port = 3000;
 
-const TELEGRAM_BOT_TOKEN = 'TOKENUL_TAU_TELEGRAM';
+const TELEGRAM_BOT_TOKEN = 'TOKENUL_TĂU_TELEGRAM';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
 // Variabilă pentru stocarea ultimului mesaj
@@ -14,7 +14,7 @@ let lastMessage = null;
 
 // Configurăm CORS pentru a permite cererile de pe originile dorite
 app.use(cors({
-    origin: 'https://play.unity.com/en/games/2d60e257-5fec-4dfc-993d-255e4cf0db35/webgl-builds', // Permite cererile doar de pe acest domeniu
+    origin: 'https://tektonikstest.vercel.app', // Permite cererile doar de pe acest domeniu
     methods: ['GET', 'POST'], // Permite doar metodele GET și POST
     allowedHeaders: ['Content-Type', 'Authorization'] // Permite aceste anteturi
 }));
