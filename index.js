@@ -12,9 +12,16 @@ const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 // Variabilă pentru stocarea ultimului mesaj
 let lastMessage = null;
 
-// Configurăm CORS pentru a permite cererile de pe originile dorite
+// Configurăm CORS pentru a permite cererile doar de pe originile dorite
 app.use(cors({
-    origin: 'https://tekrepos.vercel.app/', // Permite cererile doar de pe acest domeniu
+    origin: (origin, callback) => {
+        // Permite cererile doar de pe https://tekrepos.vercel.app
+        if (origin === 'https://tekrepos.vercel.app') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST'], // Permite doar metodele GET și POST
     allowedHeaders: ['Content-Type', 'Authorization'] // Permite aceste anteturi
 }));
