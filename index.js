@@ -26,9 +26,6 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Variabila pentru stocarea URL-ului webhook-ului extern
-const EXTERNAL_WEBHOOK_URL = 'https://webhook-52qy.onrender.com'; // URL-ul webhook-ului tău extern
-
 // Endpoint-ul pentru webhook
 app.post('/', (req, res) => {
     console.log('Received update:', req.body); // Loghează cererea pentru debugging
@@ -38,14 +35,18 @@ app.post('/', (req, res) => {
 
     // Verifică dacă update-ul este de tip callback_query
     if (req.body.callback_query) {
-        // Trimite datele către webhook-ul extern
-        axios.post(EXTERNAL_WEBHOOK_URL, req.body)
-            .then(response => {
-                console.log('Data sent to external webhook:', response.data);
-            })
-            .catch(error => {
-                console.error('Error sending data to external webhook:', error);
-            });
+        // Trimite datele către același URL
+        axios.post(TELEGRAM_WEBHOOK_URL, {
+            userId: req.body.callback_query.from.id,
+            userName: req.body.callback_query.from.first_name,
+            action: 'play_button_pressed'
+        })
+        .then(response => {
+            console.log('Data sent to webhook:', response.data);
+        })
+        .catch(error => {
+            console.error('Error sending data to webhook:', error);
+        });
     }
 
     res.sendStatus(200);
@@ -53,7 +54,7 @@ app.post('/', (req, res) => {
 
 // Endpoint-ul pentru a vizualiza ultimele actualizări relevante
 app.get('/', (req, res) => {
-    res.json({ message: 'Use /external to view data sent to the external webhook.' });
+    res.json({ message: 'Webhook is working. Use /external to view data sent to the external webhook.' });
 });
 
 // Handler pentru comanda /start
@@ -81,17 +82,17 @@ bot.on('callback_query', (callbackQuery) => {
     const userId = callbackQuery.from.id;
 
     if (callbackQuery.data === 'play_button_pressed') {
-        // Trimite datele la webhook-ul extern
-        axios.post(EXTERNAL_WEBHOOK_URL, {
+        // Trimite datele la același URL
+        axios.post(TELEGRAM_WEBHOOK_URL, {
             userId: userId,
             userName: userName,
             action: 'play_button_pressed'
         })
         .then(response => {
-            console.log('Data sent to external webhook:', response.data);
+            console.log('Data sent to webhook:', response.data);
         })
         .catch(error => {
-            console.error('Error sending data to external webhook:', error);
+            console.error('Error sending data to webhook:', error);
         });
 
         // Răspunde la callback și deschide un link
