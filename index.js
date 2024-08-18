@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
-const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,35 +25,30 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Endpoint-ul pentru webhook
+// Variabila pentru stocarea ultimei actualizări relevante
+let lastRelevantUpdate = null;
+
+// Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
     console.log('Received update:', req.body); // Loghează cererea pentru debugging
 
-    // Procesați update-ul în mod obișnuit
-    bot.processUpdate(req.body);
-
     // Verifică dacă update-ul este de tip callback_query
     if (req.body.callback_query) {
-        // Trimite datele către același URL
-        axios.post(TELEGRAM_WEBHOOK_URL, {
-            userId: req.body.callback_query.from.id,
-            userName: req.body.callback_query.from.first_name,
-            action: 'play_button_pressed'
-        })
-        .then(response => {
-            console.log('Data sent to webhook:', response.data);
-        })
-        .catch(error => {
-            console.error('Error sending data to webhook:', error);
-        });
+        // Salvează ultima actualizare relevantă
+        lastRelevantUpdate = req.body;
     }
-
+    
+    bot.processUpdate(req.body);
     res.sendStatus(200);
 });
 
 // Endpoint-ul pentru a vizualiza ultimele actualizări relevante
 app.get('/', (req, res) => {
-    res.json({ message: 'Webhook is working. Use /external to view data sent to the external webhook.' });
+    if (lastRelevantUpdate) {
+        res.json(lastRelevantUpdate);
+    } else {
+        res.json({ message: 'No relevant updates received yet.' });
+    }
 });
 
 // Handler pentru comanda /start
@@ -67,7 +61,7 @@ bot.onText(/\/start/, (msg) => {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play', callback_data: 'play_button_pressed' }] // Folosește callback_data pentru a identifica butonul
+                [{ text: 'Play', url: 'https://t.me/fragar_bot/tek' }] // Înlocuiește cu linkul tău
             ]
         }
     };
@@ -75,31 +69,18 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, text, options);
 });
 
-// Handler pentru butonul "Play"
+// Handler pentru callback_query
 bot.on('callback_query', (callbackQuery) => {
     const chatId = callbackQuery.message.chat.id;
-    const userName = callbackQuery.from.first_name;
-    const userId = callbackQuery.from.id;
+    const userName = callbackQuery.from.first_name; // Numele utilizatorului
+    const data = callbackQuery.data; // Datele asociate cu butonul apăsat
 
-    if (callbackQuery.data === 'play_button_pressed') {
-        // Trimite datele la același URL
-        axios.post(TELEGRAM_WEBHOOK_URL, {
-            userId: userId,
-            userName: userName,
-            action: 'play_button_pressed'
-        })
-        .then(response => {
-            console.log('Data sent to webhook:', response.data);
-        })
-        .catch(error => {
-            console.error('Error sending data to webhook:', error);
-        });
+    // Trimite un mesaj cu informațiile relevante când butonul este apăsat
+    const text = `Ai apăsat butonul! Numele tău este ${userName}. Data butonului: ${data}`;
+    bot.sendMessage(chatId, text);
 
-        // Răspunde la callback și deschide un link
-        bot.answerCallbackQuery(callbackQuery.id, {
-            url: 't.me/fragar_bot/tek'
-        });
-    }
+    // Opțional: trimite un mesaj de confirmare și răspunde la callback_query
+    bot.answerCallbackQuery(callbackQuery.id, { text: 'Acțiunea a fost înregistrată!' });
 });
 
 // Pornește serverul pe portul specificat de variabila de mediu PORT
