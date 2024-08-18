@@ -25,23 +25,29 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Variabila pentru stocarea ultimei actualizări
-let lastUpdate = null;
+// Variabila pentru stocarea ultimei actualizări relevante
+let lastRelevantUpdate = null;
 
 // Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
     console.log('Received update:', req.body); // Loghează cererea pentru debugging
-    lastUpdate = req.body; // Salvează ultima actualizare primită
+
+    // Verifică dacă update-ul este de tip callback_query
+    if (req.body.callback_query) {
+        // Salvează ultima actualizare relevantă
+        lastRelevantUpdate = req.body;
+    }
+    
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });
 
-// Endpoint-ul pentru a vizualiza ultimele actualizări
+// Endpoint-ul pentru a vizualiza ultimele actualizări relevante
 app.get('/', (req, res) => {
-    if (lastUpdate) {
-        res.json(lastUpdate);
+    if (lastRelevantUpdate) {
+        res.json(lastRelevantUpdate);
     } else {
-        res.json({ message: 'No updates received yet.' });
+        res.json({ message: 'No relevant updates received yet.' });
     }
 });
 
@@ -49,7 +55,6 @@ app.get('/', (req, res) => {
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userName = msg.from.first_name; // Numele utilizatorului
-    const userId = msg.from.id; // ID-ul utilizatorului
 
     // Textul mesajului și butonul "Play"
     const text = `Bun venit, ${userName}! Apasă pe butonul de mai jos pentru a începe:`;
@@ -69,9 +74,13 @@ bot.on('callback_query', (callbackQuery) => {
     const chatId = callbackQuery.message.chat.id;
     const callbackData = callbackQuery.data;
     const userName = callbackQuery.from.first_name; // Numele utilizatorului
-    const userId = callbackQuery.from.id; // ID-ul utilizatorului
 
     if (callbackData === 'play') {
+        // Salvează și trimite update-ul relevant
+        lastRelevantUpdate = {
+            update_id: callbackQuery.id,
+            callback_query: callbackQuery
+        };
         bot.sendMessage(chatId, `Butonul "Play" a fost apăsat de ${userName}!`);
     }
 });
