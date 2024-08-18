@@ -25,19 +25,25 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
+// Variabila pentru stocarea ultimei actualizări
+let lastUpdate = null;
+
 // Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
     console.log('Received update:', req.body); // Loghează cererea pentru debugging
+    lastUpdate = req.body; // Salvează ultima actualizare primită
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });
 
-// Endpoint-ul pentru a vizualiza ultimul mesaj
+// Endpoint-ul pentru a vizualiza ultimele actualizări
 app.get('/', (req, res) => {
-    res.json(lastMessage);
+    if (lastUpdate) {
+        res.json(lastUpdate);
+    } else {
+        res.json({ message: 'No updates received yet.' });
+    }
 });
-
-let lastMessage = null;
 
 // Handler pentru comanda /start
 bot.onText(/\/start/, (msg) => {
