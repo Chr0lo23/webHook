@@ -7,7 +7,7 @@ const axios = require('axios'); // Importă axios pentru cereri HTTP
 const app = express();
 const port = 3000;
 
-const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
+const TELEGRAM_BOT_TOKEN = '7304509532:AAFy0f-lQR2f33gnt1fcDkuAoqwMb_-XXsg';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
 // URL-ul webhook-ului unde vei trimite datele
