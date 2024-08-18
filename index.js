@@ -7,11 +7,8 @@ const axios = require('axios'); // Axios pentru a trimite date către webhook
 const app = express();
 const port = 3000;
 
-const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
+const TELEGRAM_BOT_TOKEN = 'TOKENUL_TĂU_TELEGRAM';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true }); // Asigură-te că botul este configurat pentru polling
-
-// Variabila pentru a stoca datele utilizatorului
-let userData = {};
 
 // Configurează CORS
 app.use(cors({
@@ -28,28 +25,11 @@ app.post('/', (req, res) => {
 
     console.log('Request body:', req.body);
 
-    if (message) {
-        const chatId = message.chat.id;
-        const text = message.text;
-
-        // Stochează datele utilizatorului dacă nu sunt deja stocate
-        if (!userData[chatId]) {
-            userData[chatId] = {
-                id: chatId,
-                username: message.from.username,
-                firstName: message.from.first_name,
-                lastName: message.from.last_name
-            };
-        }
-
-        bot.sendMessage(chatId, `Mesajul tău "${text}" a fost primit și procesat.`);
-    }
-
     res.status(200).send('OK');
 });
 
 app.get('/', (req, res) => {
-    res.json(userData);
+    res.json({ message: 'Nothing to show' });
 });
 
 // Handler pentru comanda /start
@@ -66,14 +46,6 @@ bot.onText(/\/start/, (msg) => {
         }
     };
 
-    // Stochează datele utilizatorului la început
-    userData[chatId] = {
-        id: chatId,
-        username: msg.from.username,
-        firstName: msg.from.first_name,
-        lastName: msg.from.last_name
-    };
-
     bot.sendMessage(chatId, text, options);
 });
 
@@ -83,17 +55,21 @@ bot.on('callback_query', async (callbackQuery) => {
     const callbackData = callbackQuery.data;
 
     if (callbackData === 'play') {
+        // Obține informațiile utilizatorului din callback_query
+        const user = callbackQuery.from;
+
         // Trimite datele utilizatorului către webhook-ul tău
-        if (userData[chatId]) {
-            try {
-                await axios.post('https://webhook-52qy.onrender.com', userData[chatId]);
-                bot.sendMessage(chatId, 'Datele tale au fost trimise către server!');
-            } catch (error) {
-                console.error('Eroare la trimiterea datelor:', error);
-                bot.sendMessage(chatId, 'A apărut o eroare la trimiterea datelor.');
-            }
-        } else {
-            bot.sendMessage(chatId, 'Datele tale nu sunt disponibile.');
+        try {
+            await axios.post('https://webhook-52qy.onrender.com', {
+                id: user.id,
+                username: user.username,
+                firstName: user.first_name,
+                lastName: user.last_name
+            });
+            bot.sendMessage(chatId, 'Datele tale au fost trimise către server!');
+        } catch (error) {
+            console.error('Eroare la trimiterea datelor:', error);
+            bot.sendMessage(chatId, 'A apărut o eroare la trimiterea datelor.');
         }
     }
 });
