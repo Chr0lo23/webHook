@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 3000; // Use PORT environment variable or default to 3000
+const port = process.env.PORT || 3000;
 
 const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
@@ -27,8 +27,9 @@ app.use(bodyParser.json());
 
 // Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
-    bot.processUpdate(req.body); // Procesăm actualizările primite de la Telegram
-    res.sendStatus(200); // Trimite un status OK pentru a confirma că cererea a fost primită
+    console.log('Received update:', req.body); // Loghează cererea pentru debugging
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
 });
 
 // Endpoint-ul pentru a vizualiza ultimul mesaj
@@ -41,9 +42,11 @@ let lastMessage = null;
 // Handler pentru comanda /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
+    const userName = msg.from.first_name; // Numele utilizatorului
+    const userId = msg.from.id; // ID-ul utilizatorului
 
     // Textul mesajului și butonul "Play"
-    const text = 'Bun venit! Apasă pe butonul de mai jos pentru a începe:';
+    const text = `Bun venit, ${userName}! Apasă pe butonul de mai jos pentru a începe:`;
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -59,9 +62,11 @@ bot.onText(/\/start/, (msg) => {
 bot.on('callback_query', (callbackQuery) => {
     const chatId = callbackQuery.message.chat.id;
     const callbackData = callbackQuery.data;
+    const userName = callbackQuery.from.first_name; // Numele utilizatorului
+    const userId = callbackQuery.from.id; // ID-ul utilizatorului
 
     if (callbackData === 'play') {
-        bot.sendMessage(chatId, 'Butonul "Play" a fost apăsat!');
+        bot.sendMessage(chatId, `Butonul "Play" a fost apăsat de ${userName}!`);
     }
 });
 
