@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 3000; // Folosește variabila de mediu PORT sau 3000 ca valoare implicită
+const port = process.env.PORT || 3000; // Use PORT environment variable or default to 3000
 
 const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
@@ -65,5 +65,7 @@ bot.on('callback_query', (callbackQuery) => {
     }
 });
 
-// Nu este necesar să pornești serverul explicit pe un port,
-// platforma de găzduire se ocupă de acest lucru automat
+// Pornește serverul pe portul specificat de variabila de mediu PORT
+app.listen(port, () => {
+    console.log(`Serverul rulează la portul ${port}`);
+});
