@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
+const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
 // URL-ul webhook-ului tău (fără path)
@@ -73,7 +73,6 @@ bot.onText(/\/start/, (msg) => {
 bot.on('callback_query', (callbackQuery) => {
     const chatId = callbackQuery.message.chat.id;
     const callbackData = callbackQuery.data;
-    const userName = callbackQuery.from.first_name; // Numele utilizatorului
 
     if (callbackData === 'play') {
         // Salvează și trimite update-ul relevant
@@ -81,7 +80,17 @@ bot.on('callback_query', (callbackQuery) => {
             update_id: callbackQuery.id,
             callback_query: callbackQuery
         };
-        bot.sendMessage(chatId, `Butonul "Play" a fost apăsat de ${userName}!`);
+
+        // Trimite un nou mesaj cu un buton ce deschide un link
+        const linkOptions = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: 'Open Link', url: 't.me/fragar_bot/tek' }]
+                ]
+            }
+        };
+
+        bot.sendMessage(chatId, `Apasă pe butonul de mai jos pentru a deschide linkul:`, linkOptions);
     }
 });
 
