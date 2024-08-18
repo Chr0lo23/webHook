@@ -4,43 +4,39 @@ const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 
 const app = express();
-
-// Folosește variabila de mediu PORT sau 3000 ca valoare implicită
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // Folosește variabila de mediu PORT sau 3000 ca valoare implicită
 
 const TELEGRAM_BOT_TOKEN = '7426569023:AAF0pBokAs9DDHyURknqJUlfTe1JNUo-mEs';
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true }); // Asigură-te că botul este configurat pentru polling
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
-let lastMessage = null;
+// URL-ul webhook-ului tău (fără path)
+const TELEGRAM_WEBHOOK_URL = 'https://webhook-52qy.onrender.com';
 
+// Setează webhook-ul
+bot.setWebHook(TELEGRAM_WEBHOOK_URL);
+
+// Middleware pentru CORS
 app.use(cors({
     origin: 'https://phenomenal-malabi-ae373d.netlify.app',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
+// Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
-    const message = req.body.message;
-
-    console.log('Request body:', req.body);
-
-    lastMessage = message;
-
-    if (message) {
-        const chatId = message.chat.id;
-        const text = message.text;
-
-        bot.sendMessage(chatId, `Mesajul tău "${text}" a fost primit și procesat.`);
-    }
-
-    res.status(200).send('OK');
+    bot.processUpdate(req.body); // Procesăm actualizările primite de la Telegram
+    res.sendStatus(200); // Trimite un status OK pentru a confirma că cererea a fost primită
 });
 
+// Endpoint-ul pentru a vizualiza ultimul mesaj
 app.get('/', (req, res) => {
     res.json(lastMessage);
 });
+
+let lastMessage = null;
 
 // Handler pentru comanda /start
 bot.onText(/\/start/, (msg) => {
@@ -69,7 +65,5 @@ bot.on('callback_query', (callbackQuery) => {
     }
 });
 
-// Ascultă pe portul specificat de variabila de mediu PORT
-app.listen(port, () => {
-    console.log(`Serverul rulează la portul ${port}`);
-});
+// Nu este necesar să pornești serverul explicit pe un port,
+// platforma de găzduire se ocupă de acest lucru automat
