@@ -25,23 +25,24 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Variabila pentru stocarea ultimei actualizări
-let lastUpdate = null;
+// Obiect pentru stocarea actualizărilor fiecărui utilizator
+let userUpdates = {};
 
-// Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
+// Endpoint-ul pentru webhook
 app.post('/', (req, res) => {
-    console.log('Received update:', req.body); // Loghează cererea pentru debugging
-    lastUpdate = req.body; // Salvează ultima actualizare primită
+    const chatId = req.body.message.chat.id;
+    userUpdates[chatId] = req.body; // Salvează actualizarea pentru fiecare chatId
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });
 
-// Endpoint-ul pentru a vizualiza ultimele actualizări
-app.get('/', (req, res) => {
-    if (lastUpdate) {
-        res.json(lastUpdate);
+// Endpoint-ul pentru a vizualiza actualizările pentru un utilizator specific
+app.get('/user/:chatId', (req, res) => {
+    const chatId = req.params.chatId;
+    if (userUpdates[chatId]) {
+        res.json(userUpdates[chatId]);
     } else {
-        res.json({ message: 'No updates received yet.' });
+        res.json({ message: 'No updates received yet for this chatId.' });
     }
 });
 
@@ -52,7 +53,7 @@ bot.onText(/\/start/, (msg) => {
 
     // Textul mesajului și butonul "Play"
     const text = `Welcome, ${userName}! 
-    
+ 
     🎮 *Welcome to the Beta version of Tektoniks!* 🎮
 
 We're excited to have you among the first players testing this limited version. 
