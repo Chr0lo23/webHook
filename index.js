@@ -6,21 +6,14 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Token-ul botului Telegram
-const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VOoJeFUirg';
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
+const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg';
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
 // URL-ul webhook-ului tău (fără path)
 const TELEGRAM_WEBHOOK_URL = 'https://webhook-52qy.onrender.com';
 
 // Setează webhook-ul
-bot.setWebHook(TELEGRAM_WEBHOOK_URL)
-    .then(() => {
-        console.log('Webhook set successfully.');
-    })
-    .catch(err => {
-        console.error('Failed to set webhook:', err);
-    });
+bot.setWebHook(TELEGRAM_WEBHOOK_URL);
 
 // Middleware pentru CORS
 app.use(cors({
@@ -32,13 +25,13 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Obiect pentru stocarea actualizărilor fiecărui utilizator
+// Obiect pentru stocarea actualizărilor pentru fiecare utilizator
 let userUpdates = {};
 
-// Endpoint-ul pentru webhook
+// Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
-    console.log('Received update:', JSON.stringify(req.body, null, 2)); // Loghează cererea pentru debugging
-
+    console.log('Received update:', req.body); // Loghează cererea pentru debugging
+    
     const chatId = req.body.message?.chat?.id;
     if (chatId) {
         userUpdates[chatId] = req.body; // Salvează actualizarea pentru fiecare chatId
@@ -51,15 +44,11 @@ app.post('/', (req, res) => {
     }
 });
 
-// Endpoint-ul pentru ruta principală
-app.get('/', (req, res) => {
-    res.send('Webhook server is running.');
-});
-
 // Endpoint-ul pentru a vizualiza actualizările pentru un utilizator specific
 app.get('/user/:chatId', (req, res) => {
     const chatId = req.params.chatId;
     console.log(`Request received for chatId: ${chatId}`); // Loghează cererea GET
+    
     if (userUpdates[chatId]) {
         res.json(userUpdates[chatId]);
     } else {
@@ -91,6 +80,7 @@ helps us identify and resolve any issues before introducing the next set of feat
 🚀 *What's next:*
 
 Stay tuned for upcoming updates and explore new features as soon as they become available. Thank you for helping us make this game better!`;
+    
     const options = {
         reply_markup: {
             inline_keyboard: [
