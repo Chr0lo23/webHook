@@ -49,31 +49,18 @@ app.get('/', (req, res) => {
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userName = msg.from.first_name; // Numele utilizatorului
-    const userId = msg.from.id; // ID-ul utilizatorului
 
     // Textul mesajului și butonul "Play"
     const text = `Bun venit, ${userName}! Apasă pe butonul de mai jos pentru a începe:`;
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play', callback_data: 'play' }]
+                [{ text: 'Play', url: 't.me/fragar_bot/tek' }] // Înlocuiește cu URL-ul real
             ]
         }
     };
 
     bot.sendMessage(chatId, text, options);
-});
-
-// Handler pentru butonul "Play"
-bot.on('callback_query', (callbackQuery) => {
-    const chatId = callbackQuery.message.chat.id;
-    const callbackData = callbackQuery.data;
-    const userName = callbackQuery.from.first_name; // Numele utilizatorului
-    const userId = callbackQuery.from.id; // ID-ul utilizatorului
-
-    if (callbackData === 'play') {
-        bot.sendMessage(chatId, ``);
-    }
 });
 
 // Pornește serverul pe portul specificat de variabila de mediu PORT
