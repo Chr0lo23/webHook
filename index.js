@@ -7,14 +7,20 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Token-ul botului Telegram
-const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg';
+const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VOoJeFUirg';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
 
 // URL-ul webhook-ului tău (fără path)
 const TELEGRAM_WEBHOOK_URL = 'https://webhook-52qy.onrender.com';
 
 // Setează webhook-ul
-bot.setWebHook(TELEGRAM_WEBHOOK_URL);
+bot.setWebHook(TELEGRAM_WEBHOOK_URL)
+    .then(() => {
+        console.log('Webhook set successfully.');
+    })
+    .catch(err => {
+        console.error('Failed to set webhook:', err);
+    });
 
 // Middleware pentru CORS
 app.use(cors({
@@ -43,6 +49,11 @@ app.post('/', (req, res) => {
         console.log('Received update does not contain chatId.');
         res.sendStatus(400);
     }
+});
+
+// Endpoint-ul pentru ruta principală
+app.get('/', (req, res) => {
+    res.send('Webhook server is running.');
 });
 
 // Endpoint-ul pentru a vizualiza actualizările pentru un utilizator specific
