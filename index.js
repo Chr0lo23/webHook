@@ -25,29 +25,23 @@ app.use(cors({
 // Middleware pentru parserul JSON
 app.use(bodyParser.json());
 
-// Variabila pentru stocarea ultimei actualizări relevante
-let lastRelevantUpdate = null;
+// Variabila pentru stocarea ultimei actualizări
+let lastUpdate = null;
 
 // Endpoint-ul pentru webhook (acesta este acum rădăcina URL-ului)
 app.post('/', (req, res) => {
     console.log('Received update:', req.body); // Loghează cererea pentru debugging
-
-    // Verifică dacă update-ul este de tip callback_query
-    if (req.body.callback_query) {
-        // Salvează ultima actualizare relevantă
-        lastRelevantUpdate = req.body;
-    }
-    
+    lastUpdate = req.body; // Salvează ultima actualizare primită
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });
 
-// Endpoint-ul pentru a vizualiza ultimele actualizări relevante
+// Endpoint-ul pentru a vizualiza ultimele actualizări
 app.get('/', (req, res) => {
-    if (lastRelevantUpdate) {
-        res.json(lastRelevantUpdate);
+    if (lastUpdate) {
+        res.json(lastUpdate);
     } else {
-        res.json({ message: 'No relevant updates received yet.' });
+        res.json({ message: 'No updates received yet.' });
     }
 });
 
@@ -55,13 +49,14 @@ app.get('/', (req, res) => {
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userName = msg.from.first_name; // Numele utilizatorului
+    const userId = msg.from.id; // ID-ul utilizatorului
 
-    // Textul mesajului și butonul "Play" care deschide direct un link
+    // Textul mesajului și butonul "Play"
     const text = `Bun venit, ${userName}! Apasă pe butonul de mai jos pentru a începe:`;
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play', url: 'https://t.me/fragar_bot/tek' }] // Înlocuiește cu linkul tău
+                [{ text: 'Play', callback_data: 'play' }]
             ]
         }
     };
@@ -69,18 +64,16 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, text, options);
 });
 
-// Handler pentru callback_query
+// Handler pentru butonul "Play"
 bot.on('callback_query', (callbackQuery) => {
     const chatId = callbackQuery.message.chat.id;
+    const callbackData = callbackQuery.data;
     const userName = callbackQuery.from.first_name; // Numele utilizatorului
-    const data = callbackQuery.data; // Datele asociate cu butonul apăsat
+    const userId = callbackQuery.from.id; // ID-ul utilizatorului
 
-    // Trimite un mesaj cu informațiile relevante când butonul este apăsat
-    const text = `Ai apăsat butonul! Numele tău este ${userName}. Data butonului: ${data}`;
-    bot.sendMessage(chatId, text);
-
-    // Opțional: trimite un mesaj de confirmare și răspunde la callback_query
-    bot.answerCallbackQuery(callbackQuery.id, { text: 'Acțiunea a fost înregistrată!' });
+    if (callbackData === 'play') {
+        bot.sendMessage(chatId, ``);
+    }
 });
 
 // Pornește serverul pe portul specificat de variabila de mediu PORT
