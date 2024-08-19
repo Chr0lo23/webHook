@@ -17,7 +17,7 @@ bot.setWebHook(TELEGRAM_WEBHOOK_URL);
 
 // Middleware pentru CORS
 app.use(cors({
-    origin: 'https://phenomenal-malabi-ae373d.netlify.app',
+    origin: 'https://beta-tektoniks.vercel.app',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -51,7 +51,9 @@ bot.onText(/\/start/, (msg) => {
     const userName = msg.from.first_name; // Numele utilizatorului
 
     // Textul mesajului și butonul "Play"
-    const text = `Welcome, ${userName}! 🎮 *Welcome to the Beta version of Tektoniks!* 🎮
+    const text = `Welcome, ${userName}! 
+    
+    🎮 *Welcome to the Beta version of Tektoniks!* 🎮
 
 We're excited to have you among the first players testing this limited version. 
 During the beta period, a select group of people, including you, will have exclusive access to the game's features.
@@ -70,7 +72,7 @@ Stay tuned for upcoming updates and explore new features as soon as they become 
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play', url: 't.me/fragar_bot/tek' }] // Înlocuiește cu URL-ul real
+                [{ text: 'Play', url: 't.me/betatekton_bot/betatek'}] // Înlocuiește cu URL-ul real
             ]
         }
     };
