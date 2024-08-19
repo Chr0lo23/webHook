@@ -6,8 +6,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Token-ul botului Telegram
 const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg';
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
 
 // URL-ul webhook-ului tău (fără path)
 const TELEGRAM_WEBHOOK_URL = 'https://webhook-52qy.onrender.com';
@@ -30,15 +31,24 @@ let userUpdates = {};
 
 // Endpoint-ul pentru webhook
 app.post('/', (req, res) => {
-    const chatId = req.body.message.chat.id;
-    userUpdates[chatId] = req.body; // Salvează actualizarea pentru fiecare chatId
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
+    console.log('Received update:', JSON.stringify(req.body, null, 2)); // Loghează cererea pentru debugging
+
+    const chatId = req.body.message?.chat?.id;
+    if (chatId) {
+        userUpdates[chatId] = req.body; // Salvează actualizarea pentru fiecare chatId
+        console.log(`Update stored for chatId ${chatId}:`, req.body); // Loghează actualizarea stocată
+        bot.processUpdate(req.body);
+        res.sendStatus(200);
+    } else {
+        console.log('Received update does not contain chatId.');
+        res.sendStatus(400);
+    }
 });
 
 // Endpoint-ul pentru a vizualiza actualizările pentru un utilizator specific
 app.get('/user/:chatId', (req, res) => {
     const chatId = req.params.chatId;
+    console.log(`Request received for chatId: ${chatId}`); // Loghează cererea GET
     if (userUpdates[chatId]) {
         res.json(userUpdates[chatId]);
     } else {
