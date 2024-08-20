@@ -21,6 +21,7 @@ bot.onText(/\/start/, (msg) => {
     const userName = msg.from.first_name;
 
     const text = `Welcome, ${userName}! 
+
     🎮 *Welcome to the Beta version of Tektoniks!* 🎮
     
     We're excited to have you among the first players testing this limited version. During the beta period, a select group of people, including you, will have exclusive access to the game's features.
@@ -38,7 +39,8 @@ bot.onText(/\/start/, (msg) => {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play', url: 't.me/betatekton_bot/betatek' }] // Înlocuiește cu URL-ul real
+                [{ text: 'Play Now', url: 't.me/betatekton_bot/betatek' }], // Înlocuiește cu URL-ul real
+                [{ text: 'Closed Beta Group', url: 'https://t.me/+9fcTpCOrL5AyZDZi' }] // Adaugă al doilea buton cu URL-ul dorit
             ]
         }
     };
