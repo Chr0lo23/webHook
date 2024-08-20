@@ -1,21 +1,22 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
+const axios = require('axios'); // Import axios for HTTP requests
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg'; // Înlocuiește cu tokenul tău
+const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg'; // Replace with your actual token
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-// Middleware pentru CORS
+// Middleware for CORS
 app.use(cors({
     origin: 'https://beta-tektoniks.vercel.app',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Handler pentru comanda /start
+// Handler for /start command
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userName = msg.from.first_name;
@@ -39,13 +40,33 @@ bot.onText(/\/start/, (msg) => {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play Now', url: 't.me/betatekton_bot/betatek' }], // Înlocuiește cu URL-ul real
-                [{ text: 'Closed Beta Group', url: 'https://t.me/+9fcTpCOrL5AyZDZi' }] // Adaugă al doilea buton cu URL-ul dorit
+                [{ text: 'Play Now', url: 't.me/betatekton_bot/betatek' }], // Replace with actual URL
+                [{ text: 'Closed Beta Group', url: 'https://t.me/+9fcTpCOrL5AyZDZi' }] // Add second button with the desired URL
             ]
         }
     };
 
+    // Send message to the user
     bot.sendMessage(chatId, text, options);
+
+    // Prepare user data to send to the webhook
+    const userData = {
+        chatId: chatId,
+        userName: userName,
+        firstName: msg.from.first_name,
+        lastName: msg.from.last_name,
+        username: msg.from.username,
+        languageCode: msg.from.language_code,
+    };
+
+    // Send the user data to the webhook
+    axios.post('https://webhook-52qy.onrender.com/', userData)
+        .then(response => {
+            console.log('User data sent successfully:', response.data);
+        })
+        .catch(error => {
+            console.error('Error sending user data:', error);
+        });
 });
 
 app.listen(port, () => {
