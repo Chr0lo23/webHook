@@ -42,7 +42,7 @@ bot.onText(/\/start/, (msg) => {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Play Now', url: 'https://t.me/betatekton_bot/TekBeta' }], // Înlocuiește cu URL-ul real
+                [{ text: 'Play Now', url: 'https://t.me/TektoniksBeta_bot/betatektoniks' }], // Înlocuiește cu URL-ul real
                 [{ text: 'Closed Beta Group', url: 'https://t.me/+9fcTpCOrL5AyZDZi' }] // Adaugă al doilea buton cu URL-ul dorit
             ]
         }
