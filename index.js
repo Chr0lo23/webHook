@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const TELEGRAM_BOT_TOKEN = '7385965012:AAFYRZfcWxxBD7minivi-XE6_VooJeFUirg'; // Înlocuiește cu tokenul tău real
+const TELEGRAM_BOT_TOKEN = '7515215425:AAEPITeUc0GZJpe54WHItOY_CZQjtYDOM3c'; // Înlocuiește cu tokenul tău real
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
 // Middleware pentru CORS
