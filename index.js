@@ -48,8 +48,3 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-// Configurarea tunelului ngrok pentru expunerea serverului
-(async function() {
-    const url = await ngrok.connect(port);
-    console.log(`ngrok tunnel established at ${url}`);
-})();
