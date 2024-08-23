@@ -11,7 +11,7 @@ const token = '7012860316:AAGIZrpqPLJ4j66bPUJGoXksHcEclGxMo-g';
 const bot = new TelegramBot(token, { polling: true });
 
 // URL-ul jocului tău
-const gameUrl = 'https://t.me/fragar_bot/asd'; // URL-ul aplicației tale WebGL
+const gameUrl = 'https://t.me/letsDanceTek_bot/letsDance'; // URL-ul aplicației tale WebGL
 
 // Configurarea serverului Express
 const app = express();
