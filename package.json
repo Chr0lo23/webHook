@@ -1,5 +1,5 @@
 {
-  "name": "folder-nous",
+  "name": "log",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,10 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.7.4",
-    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "ngrok": "^5.0.0-beta.2",
     "node-telegram-bot-api": "^0.66.0"
   }
 }
