@@ -5,13 +5,13 @@ const cors = require('cors');
 const ngrok = require('ngrok');
 
 // Token-ul botului tău Telegram
-const token = '7092300063:AAGAIjY2vU1AxotoBGGZpk7ihMVWIFNWtfA';
+const token = '7688007953:AAHcFAo69QipU2wLke8POgIOpUjECisl6ng';
 
 // Creează o instanță a botului
 const bot = new TelegramBot(token, { polling: true });
 
 // URL-ul jocului tău
-const gameUrl = 'https://t.me/TektoniksS1_bot'; // URL-ul aplicației tale WebGL
+const gameUrl = 'https://t.me/TektoniksGame_bot/tektoniks'; // URL-ul aplicației tale WebGL
 
 // Configurarea serverului Express
 const app = express();
