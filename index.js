@@ -55,7 +55,7 @@ Recover energy and boost your swipe points with drinks, while mastering *Dance C
             inline_keyboard: [
                 [{ text: 'Play Now', url: urlWithParams }],
                 [{ text: 'Join Official Telegram', url: 'https://t.me/tektoniks_official' }],
-                [{ text: 'Visit Twitter', url: 'https://x.com/home?lang=ro' }],
+                [{ text: 'Visit Twitter', url: 'https://x.com/tektoniks_' }],
                 [{ text: 'Tektoniks Website', url: 'https://www.tekton.fun' }]
             ],
         },
